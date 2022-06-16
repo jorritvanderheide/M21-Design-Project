@@ -5,4 +5,46 @@
   padding: 0;
   font-family: sans-serif;
   user-select: none;
+  overflow: hidden;
+}
+
+.node {
+  position: absolute;
+  display: flex;
+  background-color: #333;
+  color: #eee;
+  border-radius: 50%;
+  text-align: center;
+  align-items: center;
+}
+
+.panel {
+  position: absolute;
+  display: flex;
+  padding: 5vw 2.5vw;
+  top: 0;
+  left: 0;
+  background-color: #cccccc;
+  max-width: 15vw;
+  height: 100vh;
+  z-index: 1000;
+  flex-direction: column;
+
+  div {
+    margin-bottom: 2.5vw;
+
+    p {
+      margin: 0.5em 0 1em;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+  visibility: hidden;
+}
+
+.hidden2 {
+  display: none;
+  visibility: hidden;
 }
