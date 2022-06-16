@@ -17,6 +17,11 @@ body {
   h1 {
     font-size: 1.5em !important;
   }
+
+  h2 {
+    font-size: 1.25em !important;
+    font-weight: bold;
+  }
 }
 
 .columns {
@@ -177,4 +182,35 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+#consentBanner {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba($color: #000000, $alpha: 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+
+  .box {
+    width: 30vw;
+    height: fit-content;
+
+    ul {
+      list-style-type: disc;
+      margin: 1em 0 1em 1.25em;
+    }
+
+    .buttons {
+      margin-top: 1em;
+
+      .button {
+        width: 100%;
+      }
+    }
+  }
 }

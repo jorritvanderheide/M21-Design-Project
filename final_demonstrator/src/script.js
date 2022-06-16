@@ -33,7 +33,7 @@ var shapeCounter = 1;
 var fileCounter = 1;
 var hasUI = true;
 var rotationSpeed = 10;
-var colorArray = [0x8e44ad, 0x27ae60, 0xe67e22];
+var colorArray = [0x8e44ad, 0x27ae60, 0xe67e22, 0x3498db, 0xc0392b, 0xf1c40f];
 let ifStart = true;
 
 // Stats
@@ -87,6 +87,7 @@ const glitchPass = new GlitchPass();
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000);
 camera.position.set(100, 100, 100);
+
 // Node texture
 let nodeMaterial = new THREE.MeshPhysicalMaterial();
 let envmaploader = new THREE.PMREMGenerator(renderer);
@@ -209,7 +210,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 const controls = new CameraControls(camera, canvas);
 controls.minDistance = 50;
 controls.maxDistance = 500;
-controls.touches.two = CameraControls.ACTION.TOUCH_ZOOM;
+controls.touches.two = CameraControls.ACTION.TOUCH_DOLLY;
 controls.touches.three = CameraControls.ACTION.TOUCH_ROTATE;
 controls.dollyTo(DOLLY_DISTANCE_FAR, true);
 
@@ -249,6 +250,7 @@ window.addEventListener("resize", () => {
 // Pointer input
 document.addEventListener("mousemove", onPointerMove);
 document.addEventListener("click", onPointerClick);
+document.addEventListener("touch", onPointerClick);
 
 // Keyboard input
 document.addEventListener("keydown", onKeyPress);
@@ -264,6 +266,13 @@ document.getElementById("impactSlider").addEventListener("mouseup", setSlider);
 document.getElementById("impactSlider").addEventListener("touchend", setSlider);
 document.getElementById("deleteUploadNotification").addEventListener("click", deleteUpload);
 document.getElementById("noDeleteUploadNotification").addEventListener("click", noDeleteUpload);
+document.getElementById("agreeButton").addEventListener("click", hideConsent);
+document.getElementById("disagreeButton").addEventListener("click", hideConsent);
+
+// Hide consent box
+function hideConsent() {
+  document.getElementById("consentBanner").classList.add("hidden");
+}
 
 // File drag & drop
 document.addEventListener("dragstart", (event) => {
@@ -467,17 +476,17 @@ function addRandom() {
         document.getElementById("nodeType").innerHTML = "person recommendation";
         document.getElementById("nodeName").innerHTML = "Jorrit van der Heide";
         document.getElementById("nodeDesc").innerHTML =
-          "You might want to link to this content, that is already available in the Atlas of Transformation.";
+          "You might want to link to this content, that is already available in the Repository of Transformation.";
       } else if (randomRec == 1) {
         document.getElementById("nodeType").innerHTML = "method recommendation";
         document.getElementById("nodeName").innerHTML = "Transforming Practices";
         document.getElementById("nodeDesc").innerHTML =
-          "You might want to link to this content, that is already available in the Atlas of Transformation.";
+          "You might want to link to this content, that is already available in the Repository of Transformation.";
       } else {
         document.getElementById("nodeType").innerHTML = "case recommendation";
         document.getElementById("nodeName").innerHTML = "Station of Being";
         document.getElementById("nodeDesc").innerHTML =
-          "You might want to link to this content, that is already available in the Atlas of Transformation.";
+          "You might want to link to this content, that is already available in the Repository of Transformation.";
       }
       newRecommendation.position.set(recX, recY, recZ);
       scene.add(newRecommendation);
@@ -494,6 +503,9 @@ function addRandom() {
         scene.getObjectByName("recommendationNode").id + ".desc",
         document.getElementById("nodeDesc").innerHTML
       );
+      document.getElementById("nodeType").innerHTML = "nodetype";
+      document.getElementById("nodeName").innerHTML = "Node Name";
+      document.getElementById("nodeDesc").innerHTML = "Type a description for this node here.";
     } else {
       var removeObject = scene.getObjectByName("recommendationNode");
       var removeLight = scene.getObjectByName("recLight");

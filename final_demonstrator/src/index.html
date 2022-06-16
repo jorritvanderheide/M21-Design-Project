@@ -3,10 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#35485e" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#35485e" />
+    <link rel="manifest" href="../static/manifest.json" />
+    <link href="../static/favicon-180x180.webp" rel="apple-touch-icon" type="image/webp" />
+    <link href="../static/favicon-32x32.webp" rel="icon" type="image/webp" sizes="32x32" />
+    <link href="../static/favicon-16x16.webp" rel="icon" type="image/webp" sizes="16x16" />
+    <meta
+      name="description"
+      content="An interactive web experience that showcases explorations for the Repository of Transformation."
+    />
     <title>Repo*duction</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
   </head>
   <body>
+    <!-- <div id="consentBanner">
+      <div class="box">
+        <h2>Welcome to repo*duction!</h2>
+        <p>
+          Before continuing, you can choose to share usage data for further improvement of the platform. This website
+          collects anonymous usage data about your use of this website, including:
+        </p>
+        <ul>
+          <li>Clicks</li>
+          <li>Scrolling</li>
+          <li>Timestamps</li>
+        </ul>
+        <p>By sharing this data, you can help to further develop the concept</p>
+        <div class="buttons">
+          <button id="agreeButton" class="button is-success">Continue and help improve the platform</button>
+          <button id="disagreeButton" class="button is-warning">Continue, but do not record my data</button>
+        </div>
+      </div>
+    </div> -->
     <div class="columns is-gapless">
       <div class="column is-one-fifth">
         <div id="ui" class="ui box">
@@ -39,11 +68,13 @@
     </div>
     <div id="whiteboardBox" class="column is-one-fifth">
       <div id="nodeInfo" class="content is-normal has-text-centered box">
-        <h5 id="nodeType" contenteditable="true" onclick="this.innerHTML = ''">nodetype</h5>
-        <h1 id="nodeName" contenteditable="true" onclick="this.innerHTML = ''">Node Name</h1>
+        <h5 id="nodeType" contenteditable="true" onclick="this.innerHTML = ''">&#9999;&#65039; nodetype</h5>
+        <h1 id="nodeName" contenteditable="true" onclick="this.innerHTML = ''">&#9999;&#65039; Node Name</h1>
       </div>
       <div id="nodeDescriptionBox" class="content is-normal box">
-        <p id="nodeDesc" contenteditable="true" onclick="this.innerHTML = ''">Type a description for this node here.</p>
+        <p id="nodeDesc" contenteditable="true" onclick="this.innerHTML = ''">
+          &#9999;&#65039; Type a description for this node here.
+        </p>
       </div>
       <div id="fileDrop" class="fileDrop box content is-normal">
         <h5>Attached files</h5>
@@ -53,8 +84,10 @@
     <div class="notificationBox">
       <div class="notificationArea">
         <div id="uploadNotification" class="notification hidden">
-          <strong>Congratulations!</strong> You have succesfull uploaded this project to the Atlas of Transformation. Do
-          you want to start over with a new project, or keep editing the current project?
+          <p>
+            <strong>Congratulations!</strong> You have succesfull uploaded this project to the Repository of
+            Transformation. Do you want to start over with a new project, or keep editing the current project?
+          </p>
           <div class="buttons">
             <button id="deleteUploadNotification" class="button is-success">Start over</button>
             <button id="noDeleteUploadNotification" class="button is-warning">Keep editing</button>
