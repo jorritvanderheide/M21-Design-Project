@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required <meta> tags -->
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet" />
+
+    <!-- Title -->
+    <title>Concept Atlas of Transformation</title>
+  </head>
+  <body>
+    <main>
+      <!-- Lest side bar -->
+      <div class="side-left">
+        <div id="lenses" class="hidden">
+          <div id="lense-people" class="circle-side">
+            <p>People</p>
+          </div>
+          <div id="lense-ways-of-working" class="circle-side">
+            <p>Ways of working</p>
+          </div>
+          <div id="lense-output" class="circle-side">
+            <p>Output</p>
+          </div>
+          <div id="lense-outcome" class="circle-side">
+            <p>Outcome</p>
+          </div>
+          <div id="lense-impact" class="circle-side">
+            <p>Impact</p>
+          </div>
+          <a
+            href="javascript:window.location.reload();"
+            class="circle-side"
+            style="text-decoration: none; background-color: #aaa"
+          >
+            <p style="color: black"><span>&larr;--- Back</span></p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Main screen -->
+      <div class="main">
+        <h1 id="title">
+          <span id="message">Release mouse to view</span> <span id="cat1" class="cat">category1</span> through the lense
+          of
+          <span id="cat2" class="cat">category2</span>
+        </h1>
+
+        <div id="order1">
+          <div id="node-people" class="circle">
+            <p>People</p>
+          </div>
+          <div id="node-ways-of-working" class="circle">
+            <p>Ways of working</p>
+          </div>
+          <div id="node-output" class="circle">
+            <p>Output</p>
+          </div>
+          <div id="node-outcome" class="circle">
+            <p>Outcome</p>
+          </div>
+          <div id="node-impact" class="circle">
+            <p>Impact</p>
+          </div>
+        </div>
+
+        <div id="people-view" class="hidden">
+          <div id="people-1" class="circle2">
+            <p>People</p>
+          </div>
+          <div id="people-2" class="circle2">
+            <p>People</p>
+          </div>
+          <div id="people-3" class="circle2">
+            <p>People</p>
+          </div>
+          <div id="people-4" class="circle2">
+            <p>People</p>
+          </div>
+          <div id="people-5" class="circle2">
+            <p>People</p>
+          </div>
+        </div>
+
+        <div id="ways-view" class="hidden">
+          <div id="ways-1" class="circle3">
+            <p>Ways of Working</p>
+          </div>
+          <div id="ways-2" class="circle3">
+            <p>Ways of Working</p>
+          </div>
+          <div id="ways-3" class="circle3">
+            <p>Ways of Working</p>
+          </div>
+          <div id="ways-4" class="circle3">
+            <p>Ways of Working</p>
+          </div>
+          <div id="ways-5" class="circle3">
+            <p>Ways of Working</p>
+          </div>
+        </div>
+
+        <div id="output-view" class="hidden">
+          <div id="output-1" class="circle4">
+            <p>Output</p>
+          </div>
+          <div id="output-2" class="circle4">
+            <p>Output</p>
+          </div>
+          <div id="output-3" class="circle4">
+            <p>Output</p>
+          </div>
+          <div id="output-4" class="circle4">
+            <p>Output</p>
+          </div>
+          <div id="output-5" class="circle4">
+            <p>Output</p>
+          </div>
+        </div>
+
+        <div id="outcome-view" class="hidden">
+          <div id="outcome-1" class="circle5">
+            <p>Outcome</p>
+          </div>
+          <div id="outcome-2" class="circle5">
+            <p>Outcome</p>
+          </div>
+          <div id="outcome-3" class="circle5">
+            <p>Outcome</p>
+          </div>
+          <div id="outcome-4" class="circle5">
+            <p>Outcome</p>
+          </div>
+          <div id="outcome-5" class="circle5">
+            <p>Outcome</p>
+          </div>
+        </div>
+
+        <div id="impact-view" class="hidden">
+          <div id="impact-1" class="circle6">
+            <p>Impact</p>
+          </div>
+          <div id="impact-2" class="circle6">
+            <p>Impact</p>
+          </div>
+          <div id="impact-3" class="circle6">
+            <p>Impact</p>
+          </div>
+          <div id="impact-4" class="circle6">
+            <p>Impact</p>
+          </div>
+          <div id="impact-5" class="circle6">
+            <p>Impact</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info panel -->
+      <div class="side-right" style="padding: 2.5em">
+        <h2 style="margin-bottom: 1em">Info panel</h2>
+        <p>Contains info about a selected output/person/relation</p>
+        <p style="color: red; margin-bottom: 2em">To be added</p>
+        <p>You can drag nodes on top of each other to see instances through the lense of other instances.</p>
+        <p>Note that the connections between nodes are not currently implemented.</p>
+      </div>
+    </main>
+
+    <!-- Custom JS -->
+    <script type="text/javascript" src="js/script.js"></script>
+  </body>
+</html>

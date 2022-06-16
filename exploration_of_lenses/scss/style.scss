@@ -1,0 +1,411 @@
+$width: 1144;
+$height: 480;
+
+* {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+main {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+
+  .side-left {
+    width: 10vw;
+    height: 100vh;
+    background-color: #ccc;
+
+    #lenses {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1em;
+
+      #lense-people {
+        background-color: darkslateblue;
+
+        &:hover {
+          border: solid 5px darkslateblue;
+          background-color: #ccc;
+        }
+
+        p {
+          transform: rotate(-90deg);
+          position: relative;
+          left: -4.75em !important;
+        }
+      }
+
+      #lense-ways-of-working {
+        background-color: darkolivegreen;
+
+        &:hover {
+          border: solid 5px darkolivegreen;
+          background-color: #ccc;
+        }
+
+        p {
+          transform: rotate(-90deg);
+          position: relative;
+          left: -4.75em !important;
+        }
+      }
+
+      #lense-output {
+        background-color: darkviolet;
+
+        &:hover {
+          border: solid 5px darkviolet;
+          background-color: #ccc;
+        }
+
+        p {
+          transform: rotate(-90deg);
+          position: relative;
+          left: -4.75em !important;
+        }
+      }
+
+      #lense-outcome {
+        background-color: darkgoldenrod;
+
+        &:hover {
+          border: solid 5px darkgoldenrod;
+          background-color: #ccc;
+        }
+
+        p {
+          transform: rotate(-90deg);
+          position: relative;
+          left: -4.75em !important;
+        }
+      }
+
+      #lense-impact {
+        background-color: darkorange;
+
+        &:hover {
+          border: solid 5px darkorange;
+          background-color: #ccc;
+        }
+
+        p {
+          transform: rotate(-90deg);
+          position: relative;
+          left: -4.75em !important;
+        }
+      }
+    }
+  }
+
+  .nopointer {
+    cursor: not-allowed !important;
+  }
+
+  .main {
+    width: 70vw;
+    height: 100vh;
+  }
+
+  .side-right {
+    width: 20vw;
+    height: 100vh;
+    background-color: #ccc;
+  }
+}
+
+#title {
+  text-align: center;
+  font-weight: normal;
+  margin-top: 10vh;
+  z-index: 1000;
+  display: none;
+
+  .cat {
+    font-weight: bold;
+  }
+}
+
+.block {
+  display: block !important;
+}
+
+.circle,
+.circle2,
+.circle3,
+.circle4,
+.circle5,
+.circle6,
+.circle-side {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  aspect-ratio: 1/1;
+  background-color: #ccc;
+  z-index: 0;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  p {
+    font-weight: bold;
+    margin: 0;
+    width: min-content;
+  }
+}
+
+.circle-side {
+  position: static;
+}
+
+.circle2 {
+  background-color: darkslateblue;
+}
+
+.circle3 {
+  background-color: darkolivegreen;
+}
+
+.circle4 {
+  background-color: darkviolet;
+}
+
+.circle5 {
+  background-color: darkgoldenrod;
+}
+
+.circle6 {
+  background-color: darkorange;
+}
+
+.overlap-top {
+  width: 200px;
+  border: solid 10px #333;
+  background-color: rgba(204, 204, 204, 0.5) !important;
+  z-index: 7;
+
+  p {
+    position: absolute;
+    top: 1em;
+    left: -3.25em;
+    transform: rotate(-90deg);
+  }
+}
+
+.overlap-bot {
+  border-radius: 50px;
+  z-index: 1;
+
+  p {
+    color: #333;
+    opacity: 1;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.big-lense {
+  display: block !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 70vw !important;
+  margin-left: 10vw;
+  height: 100vh !important;
+  background-color: transparent !important;
+  border: #333 solid 25px;
+  pointer-events: none;
+  z-index: -1;
+
+  p {
+    display: none;
+  }
+}
+
+#node-people {
+  top: random($height) + 250 + px;
+  left: random($width) + 248 + px;
+  background-color: darkslateblue;
+  border-color: darkslateblue;
+}
+
+#node-ways-of-working {
+  top: random($height) + 250 + px;
+  left: random($width) + 248 + px;
+  background-color: darkolivegreen;
+  border-color: darkolivegreen;
+}
+
+#node-output {
+  top: random($height) + 250 + px;
+  left: random($width) + 248 + px;
+  background-color: darkviolet;
+  border-color: darkviolet;
+}
+
+#node-outcome {
+  top: random($height) + 250 + px;
+  left: random($width) + 248 + px;
+  background-color: darkgoldenrod;
+  border-color: darkgoldenrod;
+}
+
+#node-impact {
+  top: random($height) + 250 + px;
+  left: random($width) + 248 + px;
+  background-color: darkorange;
+  border-color: darkorange;
+}
+
+.disabled {
+  pointer-events: none;
+  text-decoration: none;
+  p {
+    color: black;
+  }
+}
+
+#people-view {
+  #people-1 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #people-2 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #people-3 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #people-4 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #people-5 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+}
+
+#ways-view {
+  #ways-1 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #ways-2 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #ways-3 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #ways-4 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #ways-5 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+}
+
+#output-view {
+  #output-1 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #output-2 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #output-3 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #output-4 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #output-5 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+}
+
+#outcome-view {
+  #outcome-1 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #outcome-2 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #outcome-3 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #outcome-4 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #outcome-5 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+}
+
+#impact-view {
+  #impact-1 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #impact-2 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #impact-3 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #impact-4 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+
+  #impact-5 {
+    top: random($height) + 250 + px;
+    left: random($width) + 248 + px;
+  }
+}

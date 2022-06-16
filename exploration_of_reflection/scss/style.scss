@@ -1,0 +1,144 @@
+// Media queries
+@mixin breakpoint {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+// Styles
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  user-select: none;
+}
+
+main {
+  margin: 0;
+  padding: 2.5vw 7.5vw;
+  background-color: #eee;
+
+  h1 {
+    color: #c25829;
+    text-align: center;
+    margin-bottom: 2.5vw;
+  }
+
+  p {
+    text-align: center;
+    margin-bottom: 1em;
+
+    &:last-of-type {
+      margin-bottom: 2.5vw;
+    }
+  }
+
+  .timeline {
+    #visualization {
+      background-color: white;
+      margin-bottom: 2.5vw;
+
+      .vis-dot,
+      .vis-line {
+        border-color: #c25829;
+      }
+
+      .vis-group-level-0 {
+        font-weight: 700;
+        color: #527a80;
+
+        &:first-of-type {
+          color: #c25829;
+        }
+
+        &:last-of-type {
+          color: #6fadab;
+        }
+      }
+    }
+  }
+
+  .activities {
+    list-style: none;
+    max-width: 95vw;
+    overflow-x: auto;
+    font-weight: 700;
+    margin: 5vw 0;
+
+    .items {
+      display: flex;
+      flex-direction: row;
+      gap: 2.5vw;
+      justify-content: left;
+      flex-wrap: wrap;
+
+      @include breakpoint {
+        justify-content: space-between;
+        flex-wrap: nowrap;
+      }
+
+      .item {
+        display: inline-block;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        width: 7.5vw;
+        aspect-ratio: 1/1;
+
+        span {
+          display: none;
+        }
+      }
+
+      .tr {
+        color: #c25829;
+      }
+
+      .dr {
+        color: #527a80;
+      }
+
+      .cd {
+        color: #6fadab;
+      }
+    }
+
+    // Background images
+    #tr {
+      background-image: url("../images/transform.png");
+    }
+
+    #pf {
+      background-image: url("../images/postition&frame.png");
+    }
+
+    #ie {
+      background-image: url("../images/immerse&embody.png");
+    }
+
+    #ec {
+      background-image: url("../images/envision&create.png");
+    }
+
+    #rl {
+      background-image: url("../images/reflect&learn.png");
+    }
+
+    #ae {
+      background-image: url("../images/act&experience.png");
+    }
+
+    #co {
+      background-image: url("../images/communicate.png");
+    }
+
+    #ca {
+      background-image: url("../images/collect&analyse.png");
+    }
+
+    #oc {
+      background-image: url("../images/organise&collaborate.png");
+    }
+  }
+}

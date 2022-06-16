@@ -1,0 +1,123 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+main {
+  margin: 0;
+  padding: 2.5vw 7.5vw;
+  background-color: #eee;
+}
+main h1 {
+  color: #c25829;
+  text-align: center;
+  margin-bottom: 2.5vw;
+}
+main p {
+  text-align: center;
+  margin-bottom: 1em;
+}
+main p:last-of-type {
+  margin-bottom: 2.5vw;
+}
+main .timeline #visualization {
+  background-color: white;
+  margin-bottom: 2.5vw;
+}
+main .timeline #visualization .vis-dot,
+main .timeline #visualization .vis-line {
+  border-color: #c25829;
+}
+main .timeline #visualization .vis-group-level-0 {
+  font-weight: 700;
+  color: #527a80;
+}
+main .timeline #visualization .vis-group-level-0:first-of-type {
+  color: #c25829;
+}
+main .timeline #visualization .vis-group-level-0:last-of-type {
+  color: #6fadab;
+}
+main .activities {
+  list-style: none;
+  max-width: 95vw;
+  overflow-x: auto;
+  font-weight: 700;
+  margin: 5vw 0;
+}
+main .activities .items {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  gap: 2.5vw;
+  -webkit-box-pack: left;
+      -ms-flex-pack: left;
+          justify-content: left;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+@media (min-width: 768px) {
+  main .activities .items {
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+  }
+}
+main .activities .items .item {
+  display: inline-block;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 7.5vw;
+  aspect-ratio: 1/1;
+}
+main .activities .items .item span {
+  display: none;
+}
+main .activities .items .tr {
+  color: #c25829;
+}
+main .activities .items .dr {
+  color: #527a80;
+}
+main .activities .items .cd {
+  color: #6fadab;
+}
+main .activities #tr {
+  background-image: url("../images/transform.png");
+}
+main .activities #pf {
+  background-image: url("../images/postition&frame.png");
+}
+main .activities #ie {
+  background-image: url("../images/immerse&embody.png");
+}
+main .activities #ec {
+  background-image: url("../images/envision&create.png");
+}
+main .activities #rl {
+  background-image: url("../images/reflect&learn.png");
+}
+main .activities #ae {
+  background-image: url("../images/act&experience.png");
+}
+main .activities #co {
+  background-image: url("../images/communicate.png");
+}
+main .activities #ca {
+  background-image: url("../images/collect&analyse.png");
+}
+main .activities #oc {
+  background-image: url("../images/organise&collaborate.png");
+}

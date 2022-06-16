@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Repo*duction</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+  </head>
+  <body>
+    <div class="columns is-gapless">
+      <div class="column is-one-fifth">
+        <div id="ui" class="ui box">
+          <div class="content is-normal">
+            <span class="has-text-centered"><h1>Controls</h1></span>
+            <p>In this panel you can add nodes, change their positions and shapes, and visualize their impact.</p>
+          </div>
+          <button id="changeShapeButton" class="button">Change node shape</button>
+          <button id="transformButton" class="button">Position active node</button>
+          <button id="cloudButton" class="button">Toggle node impact</button>
+          <input
+            id="impactSlider"
+            class="slider is-fullwidth"
+            step="1"
+            min="0"
+            max="100"
+            value="25"
+            type="range"
+            disabled="disabled"
+          />
+        </div>
+      </div>
+    </div>
+    <canvas class="webgl column"></canvas>
+    <div class="overlay menu">
+      <button id="uploadButton" class="button">&uarr;</button>
+      <p id="recommendationText" class="content hidden"></p>
+      <button id="addButton" class="button hidden">+</button>
+      <button id="backButton" class="button">&#x2715;</button>
+    </div>
+    <div id="whiteboardBox" class="column is-one-fifth">
+      <div id="nodeInfo" class="content is-normal has-text-centered box">
+        <h5 id="nodeType" contenteditable="true" onclick="this.innerHTML = ''">nodetype</h5>
+        <h1 id="nodeName" contenteditable="true" onclick="this.innerHTML = ''">Node Name</h1>
+      </div>
+      <div id="nodeDescriptionBox" class="content is-normal box">
+        <p id="nodeDesc" contenteditable="true" onclick="this.innerHTML = ''">Type a description for this node here.</p>
+      </div>
+      <div id="fileDrop" class="fileDrop box content is-normal">
+        <h5>Attached files</h5>
+        <ul id="fileList"></ul>
+      </div>
+    </div>
+    <div class="notificationBox">
+      <div class="notificationArea">
+        <div id="uploadNotification" class="notification hidden">
+          <strong>Congratulations!</strong> You have succesfull uploaded this project to the Atlas of Transformation. Do
+          you want to start over with a new project, or keep editing the current project?
+          <div class="buttons">
+            <button id="deleteUploadNotification" class="button is-success">Start over</button>
+            <button id="noDeleteUploadNotification" class="button is-warning">Keep editing</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      type="text/JavaScript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"
+    ></script>
+  </body>
+</html>

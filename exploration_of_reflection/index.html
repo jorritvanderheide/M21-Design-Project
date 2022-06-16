@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required <meta> tags -->
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+
+    <!-- Vis.js library-->
+    <link
+      href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Sweetalert2 library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Custom CSS -->
+
+    <link href="css/style.css" rel="stylesheet" />
+
+    <!-- Title -->
+    <title>Transformation Documentation and Reflection Tool</title>
+  </head>
+  <body>
+    <main>
+      <h1>Transformation Documentation and Reflection Tool</h1>
+      <p>Drag the categories to the chrono-scale (timeline) to add an activity or moment of transformation.</p>
+      <p>Double-click the added item to further specify it.</p>
+      <p>To be added: 'realize change' elements log functionality for each activity.</p>
+
+      <!-- Timeline -->
+      <div class="timeline">
+        <div id="visualization"></div>
+      </div>
+
+      <!-- Activities -->
+      <div class="activities">
+        <ul class="items">
+          <li id="tr" draggable="true" class="item tr"><span>Transformation - box - #c25829</span></li>
+          <li id="pf" draggable="true" class="item dr"><span>Position & Frame- range - #527a80</span></li>
+          <li id="ie" draggable="true" class="item cd"><span>Immerse and Embody TP - range - #6fadab</span></li>
+          <li id="ec" draggable="true" class="item dr"><span>Envision and Create - range - #527a80</span></li>
+          <li id="rl" draggable="true" class="item cd"><span>Reflect and Learn - range - #6fadab</span></li>
+          <li id="ae" draggable="true" class="item dr"><span>Act and Experience - range - #527a80</span></li>
+          <li id="co" draggable="true" class="item cd"><span>Communicate - range - #6fadab</span></li>
+          <li id="ca" draggable="true" class="item dr"><span>Collect and Analyse - range - #527a80</span></li>
+          <li id="oc" draggable="true" class="item cd"><span>Organise and Collaborate - range - #6fadab</span></li>
+        </ul>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"
+    ></script>
+    <script type="text/javascript" src="js/timeline.js"></script>
+  </body>
+</html>
