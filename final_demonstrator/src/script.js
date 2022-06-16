@@ -1,3 +1,7 @@
+/**
+ * Imports
+ */
+
 import "./css/style.css";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
@@ -13,63 +17,77 @@ import { FlakesTexture } from "three/examples/jsm/textures/FlakesTexture.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import Stats from "stats-js";
 
-// Init
-localStorage.clear();
-document.documentElement.scrollTop = 0;
-
-// Install
-CameraControls.install({ THREE: THREE });
+/**
+ * Declaration
+ */
 
 // Constants
-const DOLLY_DISTANCE = 50;
-const DOLLY_DISTANCE_FAR = 250;
-const BACK_KEY = "Escape";
-const HAS_STATS = false;
+const DOLLY_DISTANCE = 50; // Camera zoom distance on node click (close)
+const DOLLY_DISTANCE_FAR = 250; // Camera zoom distance on node click (far)
+const BACK_KEY = "Escape"; // Key to escape menus
+const HAS_STATS = false; // Toggle FPS counter
 
 // Variables
-var autoRotate = true;
-var hasGrid = false;
-var shapeCounter = 1;
-var fileCounter = 1;
-var hasUI = true;
-var rotationSpeed = 10;
-var colorArray = [0x8e44ad, 0x27ae60, 0xe67e22, 0x3498db, 0xc0392b, 0xf1c40f];
-let ifStart = true;
+var autoRotate = true; // Holds true auto rotate is turned on
+var hasGrid = false; // Holds true is UI is visible
+var hasUI = true; // Holds true is UI is visible
+let ifStart = false; // Holds true after first user input
+var intersectsPointer; // Holds true when an object is detected under the cursor
+let hasRecommendation = false; // Holds true if recomendations are enabled
+var shapeCounter = 1; // Number of objects
+var fileCounter = 1; // Number of files uploaded
+var rotationSpeed = 10; // Speed of the camera rotation
+var colorArray = [0x8e44ad, 0x27ae60, 0xe67e22, 0x3498db, 0xc0392b, 0xf1c40f]; // Possible colors of the nodes
 
-// Stats
+/**
+ * Init
+ */
+
+// Clear local storage on startup
+localStorage.clear();
+
+// Hotfix for a bug that scrols down the page on the first mouse click
+document.documentElement.scrollTop = 0;
+
+// Install camera controls
+CameraControls.install({ THREE: THREE });
+
+// Stats configuration
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 if (HAS_STATS == true) {
   document.body.appendChild(stats.dom);
 }
 
-// Canvas
+// Create canvas
 const canvas = document.querySelector("canvas.webgl");
 
-// Scene
+// Create scene
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x35485e, 0.001);
 scene.background = new THREE.Color(0x352b43);
 
-// Geometry
+// Create node shapes
 let nodeGeometry;
 const nodeGeometry1 = new THREE.SphereBufferGeometry(15, 64, 64);
 const nodeGeometry2 = new THREE.TorusGeometry(20, 5, 64, 32);
 const nodeGeometry3 = new THREE.CylinderBufferGeometry(12.5, 12.5, 20, 64);
 const nodeGeometry4 = new THREE.DodecahedronBufferGeometry(15);
-var geometryArray = [nodeGeometry1, nodeGeometry2, nodeGeometry3, nodeGeometry4];
+var geometryArray = [nodeGeometry1, nodeGeometry2, nodeGeometry3, nodeGeometry4]; // Array that holds the different node shapes
 
-// Sizes
+// Retrieve window size
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
 
-// Renderer=
+// Create renderer
 const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-  antialias: false,
+  canvas: canvas, // Set DOM element for rendering
+  antialias: false, // Set antialias to false because of post-processing effects
 });
+
+// Renderer configuration
 renderer.autoClear = false;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -78,113 +96,131 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// Effects
+// Create visual effects
 const composer = new EffectComposer(renderer);
 const afterimagePass = new AfterimagePass();
 const fxaaPass = new ShaderPass(FXAAShader);
 const glitchPass = new GlitchPass();
 
-// Camera
+// Create camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000);
 camera.position.set(100, 100, 100);
 
-// Node texture
+// Create node material and textures
 let nodeMaterial = new THREE.MeshPhysicalMaterial();
 let envmaploader = new THREE.PMREMGenerator(renderer);
+// Load environment map
 new RGBELoader().setPath("textures/").load("envmap.hdr", function (hdrmap) {
-  // Textures
+  // Configure textures
   let nodeTexture = new THREE.CanvasTexture(new FlakesTexture());
   nodeTexture.wrapS = THREE.RepeatWrapping;
   nodeTexture.wrapT = THREE.RepeatWrapping;
   nodeTexture.repeat.set(10, 6);
-
-  let envmap = envmaploader.fromCubemap(hdrmap);
-  const ballMaterial = {
+  let envmap = envmaploader.fromCubemap(hdrmap); // Set loaded environment map
+  // Set material propertes
+  const fancyMaterial = {
     clearcoat: 1.0,
     clearcoatRoughness: 0.1,
     metalness: 1,
     roughness: 0.8,
     normalMap: nodeTexture,
     normalScale: new THREE.Vector2(0.15, 0.15),
-    envMap: envmap.texture,
+    envMap: envmap.texture, // Add environment map
   };
-
-  nodeMaterial = new THREE.MeshPhysicalMaterial(ballMaterial);
+  nodeMaterial = new THREE.MeshPhysicalMaterial(fancyMaterial); // The final material
 });
 
-// Recommendations
-let hasRecommendation = false;
+// Setup recommendations
 let recommendationGeometry = new THREE.IcosahedronBufferGeometry(10);
 let recommendationMaterial = new THREE.MeshPhongMaterial();
 recommendationMaterial.opacity = 1;
 recommendationMaterial.depthWrite = false;
-addRecommendation();
+addRecommendation(); // Function to show recomendations at a random interval
 
-// Space dust
-const cloudGeometry = new THREE.BufferGeometry();
-const vertices = [];
-const cloudTexture = new THREE.TextureLoader().load("textures/dust.jpg");
+// Setup impact clouds
+let sliderSize = 25;
+let impactTextureLoader = new THREE.TextureLoader();
+let impactGemetry = new THREE.PlaneBufferGeometry(sliderSize * 3, sliderSize * 3); // The impact clouds consists of a plane
+let impactMaterial = new THREE.MeshLambertMaterial();
+let impactCloud = [];
+// Load impact texture
+impactTextureLoader.load("textures/smoke.jpg", function (impactTexture) {
+  impactMaterial = new THREE.MeshLambertMaterial({
+    alphaMap: impactTexture, // Add texture to mesh
+    transparent: true,
+    depthWrite: false,
+  });
+});
+
+// Create space dust particles
+const particleCloud = [];
+const dustGeometry = new THREE.BufferGeometry();
+const dustTexture = new THREE.TextureLoader().load("textures/dust.jpg"); // Load texture
+// Create 500 particless
 for (let i = 0; i < 500; i++) {
   const x = random(-Math.pow(Math.floor(Math.random() * 24), 2), Math.pow(Math.floor(Math.random() * 24), 2));
   const y = random(-Math.pow(Math.floor(Math.random() * 24), 2), Math.pow(Math.floor(Math.random() * 24), 2));
   const z = random(-Math.pow(Math.floor(Math.random() * 24), 2), Math.pow(Math.floor(Math.random() * 24), 2));
-  vertices.push(x, y, z);
+  particleCloud.push(x, y, z);
 }
-cloudGeometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+dustGeometry.setAttribute("position", new THREE.Float32BufferAttribute(particleCloud, 3));
+// Space dust material propertiess
 let cloudMaterial = new THREE.PointsMaterial({
   size: 2,
   sizeAttenuation: true,
-  alphaMap: cloudTexture,
+  alphaMap: dustTexture, //Add loaded texture
   transparent: true,
   opacity: 0.75,
-  depthWrite: false,
+  depthWrite: false, // Disables transpratent parts in textures to clips
 });
 cloudMaterial.color.setHSL(1.0, 0.3, 0.7);
-const particles = new THREE.Points(cloudGeometry, cloudMaterial);
-scene.add(particles);
+const particles = new THREE.Points(dustGeometry, cloudMaterial);
+scene.add(particles); // Add particles to scene
 
-// Set lens flare origin
+// Create point lights and lense flare
 const textureLoader = new THREE.TextureLoader();
+const flare1 = textureLoader.load("textures/lensflare/lensflare0.png");
+const flare2 = textureLoader.load("textures/lensflare/lensflare3.png");
 
-const textureFlare0 = textureLoader.load("textures/lensflare/lensflare0.png");
-const textureFlare3 = textureLoader.load("textures/lensflare/lensflare3.png");
-
+// Add point lights of type 1 (default)
 addLight(0, 0, 0);
-
 addLight(-1000, 1000, 1000);
 addLight(1000, -1000, 1000);
 addLight(1000, 1000, -1000);
 
+// Add point lights of type 2 (far lights)
 addLight2(0.55, 0.9, 0.5, 5000, 0, -1000);
 addLight2(0.08, 0.8, 0.5, 0, 0, -1000);
 
+// Function for type 1 creation
 function addLight(x, y, z) {
   let color = new THREE.Color(0xffffff);
   const light = new THREE.PointLight(color, 10, 2000);
   light.position.set(x, y, z);
-  scene.add(light);
-
+  scene.add(light); // Add light to scene
+  // Add flares
   const lensflare = new Lensflare();
-  lensflare.addElement(new LensflareElement(textureFlare0, 500, 0, light.color));
-  lensflare.addElement(new LensflareElement(textureFlare3, 60, 0.6));
-  lensflare.addElement(new LensflareElement(textureFlare3, 70, 0.7));
-  lensflare.addElement(new LensflareElement(textureFlare3, 120, 0.9));
-  lensflare.addElement(new LensflareElement(textureFlare3, 70, 1));
-  light.add(lensflare);
+  lensflare.addElement(new LensflareElement(flare1, 500, 0, light.color));
+  lensflare.addElement(new LensflareElement(flare2, 60, 0.6));
+  lensflare.addElement(new LensflareElement(flare2, 70, 0.7));
+  lensflare.addElement(new LensflareElement(flare2, 120, 0.9));
+  lensflare.addElement(new LensflareElement(flare2, 70, 1));
+  light.add(lensflare); // Add flare to scene
 }
 
+// Function for type 2 creation
 function addLight2(h, s, l, x, y, z) {
   const light = new THREE.PointLight(0xffffff, 1.5, 2000);
   light.color.setHSL(h, s, l);
   light.position.set(x, y, z);
-  scene.add(light);
-
+  scene.add(light); // Add to scene
+  // Add flares
   const lensflare = new Lensflare();
-  lensflare.addElement(new LensflareElement(textureFlare3, 60, 0.6));
-  lensflare.addElement(new LensflareElement(textureFlare3, 70, 0.7));
-  lensflare.addElement(new LensflareElement(textureFlare3, 120, 0.9));
-  lensflare.addElement(new LensflareElement(textureFlare3, 70, 1));
-  light.add(lensflare);
+  lensflare.addElement(new LensflareElement(flare2, 60, 0.6));
+  lensflare.addElement(new LensflareElement(flare2, 70, 0.7));
+  lensflare.addElement(new LensflareElement(flare2, 120, 0.9));
+  lensflare.addElement(new LensflareElement(flare2, 70, 1));
+  light.add(lensflare); // Add flare to scene
 }
 
 function addLightRec(x, y, z) {
@@ -195,42 +231,41 @@ function addLightRec(x, y, z) {
   scene.add(light);
 
   const lensflare = new Lensflare();
-  lensflare.addElement(new LensflareElement(textureFlare0, 350, 0, light.color));
-  lensflare.addElement(new LensflareElement(textureFlare3, 60, 0.6));
-  lensflare.addElement(new LensflareElement(textureFlare3, 70, 0.7));
-  lensflare.addElement(new LensflareElement(textureFlare3, 120, 0.9));
-  lensflare.addElement(new LensflareElement(textureFlare3, 70, 1));
+  lensflare.addElement(new LensflareElement(flare1, 350, 0, light.color));
+  lensflare.addElement(new LensflareElement(flare2, 60, 0.6));
+  lensflare.addElement(new LensflareElement(flare2, 70, 0.7));
+  lensflare.addElement(new LensflareElement(flare2, 120, 0.9));
+  lensflare.addElement(new LensflareElement(flare2, 70, 1));
   light.add(lensflare);
 }
 
-// Lights
+// Create ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
 
-// Controls
+// Create camera controls
 const controls = new CameraControls(camera, canvas);
 controls.minDistance = 50;
 controls.maxDistance = 500;
-controls.touches.two = CameraControls.ACTION.TOUCH_DOLLY;
-controls.touches.three = CameraControls.ACTION.TOUCH_ROTATE;
-controls.dollyTo(DOLLY_DISTANCE_FAR, true);
-
+controls.touches.two = CameraControls.ACTION.TOUCH_DOLLY; // Set custom touch actions
+controls.touches.three = CameraControls.ACTION.TOUCH_ROTATE; // Set custom touch actions
+controls.dollyTo(DOLLY_DISTANCE_FAR, true); // Position camera in default position
 const transformControls = new TransformControls(camera, canvas);
 transformControls.setMode("translate");
 
-// Input
+// Create user input
 var raycaster = new THREE.Raycaster();
 var pointer = new THREE.Vector2();
 
 // Init scene
-scene.add(ambientLight);
 scene.add(camera);
-collapseUI();
+collapseUI(); // Hides the UI on first launch
 
 /**
  * Event listeners
  */
 
-// Resize
+// Window resize
 window.addEventListener("resize", () => {
   // Update sizes
   sizes.width = window.innerWidth;
@@ -266,37 +301,28 @@ document.getElementById("impactSlider").addEventListener("mouseup", setSlider);
 document.getElementById("impactSlider").addEventListener("touchend", setSlider);
 document.getElementById("deleteUploadNotification").addEventListener("click", deleteUpload);
 document.getElementById("noDeleteUploadNotification").addEventListener("click", noDeleteUpload);
-// document.getElementById("agreeButton").addEventListener("click", hideConsent);
-// document.getElementById("disagreeButton").addEventListener("click", hideConsent);
-
-// Hide consent box
-function hideConsent() {
-  document.getElementById("consentBanner").classList.add("hidden");
-}
 
 // File drag & drop
 document.addEventListener("dragstart", (event) => {
   dragged = event.target;
 });
-
 document.addEventListener("dragover", (event) => {
   event.preventDefault();
 });
-
 document.addEventListener("drop", (event) => {
   event.preventDefault();
 
-  // move dragged element to the selected drop target
+  // Move dragged element to the selected drop target
   if (event.target.className == "fileDrop box content is-normal") {
     const ul = document.getElementById("fileList");
-    var li = document.createElement("li");
-    li.innerHTML = "&#128196 file" + fileCounter + ".file";
+    var li = document.createElement("li"); // Create new list item
+    li.innerHTML = "&#128196 file" + fileCounter + ".file"; // Set file name
     fileCounter++;
-    ul.appendChild(li);
+    ul.appendChild(li); // Add to DOM
   }
 });
 
-// Controls
+// Camera controls
 controls.addEventListener("control", cameraUserChange);
 transformControls.addEventListener("dragging-changed", (event) => {
   controls.enabled = !event.value;
@@ -306,171 +332,160 @@ transformControls.addEventListener("dragging-changed", (event) => {
  * Functions
  */
 
-// Pointer move
-var intersectsPointer;
+// On pointer move
 function onPointerMove(event) {
+  // Set pointer location
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+  // Check raycaster for collisionss
   raycaster.setFromCamera(pointer, camera);
   intersectsPointer = raycaster.intersectObjects(scene.children, false);
+  // If a collision is detected
   if (intersectsPointer.length > 0) {
     if (
       intersectsPointer[0].object.type != "GridHelper" &&
       intersectsPointer[0].object.type != "Points" &&
       intersectsPointer[0].object.name != "impactCloud"
     ) {
-      document.body.style.cursor = "pointer";
+      document.body.style.cursor = "pointer"; // Change cursor shape
       if (hasUI == false) {
-        // Get item data
+        // Get node data from local storage and show UI
         document.getElementById("nodeType").innerHTML = localStorage.getItem(intersectsPointer[0].object.id + ".type");
         document.getElementById("nodeName").innerHTML = localStorage.getItem(intersectsPointer[0].object.id + ".name");
         document.getElementById("nodeDesc").innerHTML = localStorage.getItem(intersectsPointer[0].object.id + ".desc");
         document.getElementById("whiteboardBox").style.right = "0";
       }
+      // Otherwize, hide UI
     } else {
       document.body.style.cursor = "default";
       if (hasUI == false) {
+        // Hide UI
         document.getElementById("whiteboardBox").style.right = "calc(-15vw - 2.5em)";
       }
     }
+    // Otherwize, hide UI
   } else {
     document.body.style.cursor = "default";
     if (hasUI == false) {
+      // Hide UI
       document.getElementById("whiteboardBox").style.right = "calc(-15vw - 2.5em)";
     }
   }
 }
 
-// Pointer click
+// On pointer click
 function onPointerClick(event) {
   event.preventDefault();
-
   // Check for first user input
   if (ifStart == false) {
     ifStart = true;
   }
-
-  // Show glitch
+  // Show glitch effect
   glitch();
-
+  // Enable controls
   if (scene.getObjectByName("transformControls")) {
-    // Enable controls
     controls.enabled = true;
   }
-
-  // Check for intersections
+  // Check for collisions
   raycaster.setFromCamera(pointer, camera);
   var intersects = raycaster.intersectObjects(scene.children, false);
+  // If collisions detected
   if (intersects.length > 0) {
+    // Check if collided with node
     if (intersects[0].object.material.metalness == 1) {
-      // Reset shapeCounter
-      shapeCounter = geometryArray.indexOf(intersects[0].object.geometry) + 1;
-
-      // Save active node info to LS
-      saveLS();
-
+      shapeCounter = geometryArray.indexOf(intersects[0].object.geometry) + 1; // Reset shapeCounter for node shape changes
+      saveLS(); // Save active node info to local storage
       // Reset active node
       if (scene.getObjectByName("activeNode")) {
         scene.getObjectByName("activeNode").name = "";
       }
-      intersects[0].object.name = "activeNode";
-
-      // Check if hasImpact
+      intersects[0].object.name = "activeNode"; // Set new active node
+      // Check if node has an impact cloud
       if (typeof scene.getObjectByName("activeNode").userData == "number") {
-        document.getElementById("impactSlider").disabled = false;
+        document.getElementById("impactSlider").disabled = false; // Enable impact slider
       } else {
-        document.getElementById("impactSlider").disabled = true;
+        document.getElementById("impactSlider").disabled = true; // Disable impact slider
       }
-
-      // Load active node info from LS
-      loadLS();
-
-      // Disable camera autorotate
-      autoRotate = false;
-
+      loadLS(); // Load active node info from local storage
+      autoRotate = false; // Disable camera autorotate
       // If in transform mode, detach and reattach any transformControls
       if (scene.getObjectByName("transformControls")) {
         transformControls.detach();
         transformControls.name = "";
-        transformNode();
+        transformNode(); // Reset transform controls
+        // Else, position camera to new active node
       } else {
-        // Else, position camera to new activeNodes
         controls.setPosition(
           intersects[0].object.position.x,
           intersects[0].object.position.y,
           intersects[0].object.position.z,
           true
         );
-        controls.dollyTo(DOLLY_DISTANCE + intersects[0].object.position.distanceTo(new THREE.Vector3(0, 0, 0)), true);
+        controls.dollyTo(DOLLY_DISTANCE + intersects[0].object.position.distanceTo(new THREE.Vector3(0, 0, 0)), true); // Focus camera ons new active nodes
       }
-
-      // Open the UI
-      openUI();
+      openUI(); // Open the UI
     }
   }
-
-  // Stop glitch
-  unGlitch();
+  unGlitch(); // Stop glitch effect
 }
-// Keyboard presses
+
+// Handle keyboard shortcuts
 function onKeyPress(event) {
-  // On BACKKEY
+  // On BACK_KEY
   if (event.code == BACK_KEY) {
-    backAll();
+    backAll(); // Run backAll function to go to the initial view
   }
 }
 
-// Add node
+// Function for adding a node
 function addNode() {
-  backAll();
-
-  // Enable controls
-  controls.enabled = true;
-
-  let nodeRand = random(0, geometryArray.length);
-  nodeGeometry = geometryArray[nodeRand];
-
-  // Add new mesh
+  backAll(); // Run backAll function to reset necessaray parameters
+  controls.enabled = true; // Enable camera controls
+  // Set random node shape
+  let randomShape = random(0, geometryArray.length);
+  nodeGeometry = geometryArray[randomShape];
+  // Create a new node object
   const newNode = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
   let color = new THREE.Color(colorArray[random(0, colorArray.length)]);
   newNode.material.color = color;
   newNode.name = "activeNode";
-
-  // Set mesh position
+  // Set object parameters position
   newNode.position.set(random(-100, 100), random(-100, 100), random(-100, 100));
   newNode.castShadow = true;
   newNode.receiveShadow = true;
-
-  // Disable camera autorotate
+  // Disable camera autorotate and controls
   autoRotate = false;
   controls.enabled = false;
-
-  // Add mesh to scene
+  // Add node to scene
   scene.add(newNode);
-
-  // Set controls
+  // Focus camera on node
   controls.setPosition(newNode.position.x, newNode.position.y, newNode.position.z, true);
-  controls.dollyTo(DOLLY_DISTANCE + newNode.position.distanceTo(new THREE.Vector3(0, 0, 0)), true);
-  openUI();
+  controls.dollyTo(DOLLY_DISTANCE + newsNode.position.distanceTo(new THREE.Vector3(0, 0, 0)), true);
+  openUI(); // Open UIs
 }
 
+// Function that triggers node recomendations
 function addRecommendation() {
-  setInterval(addRandom, random(10000, 20000));
+  setInterval(addRandom, random(10000, 20000)); // Call a function that repeats at a semi-random interval
 }
 
+// Function that adds recommendation nodes to scene
 function addRandom() {
+  // Check for first user input
   if (intersectsPointer && ifStart == true) {
+    // Check for previous recommendation node and UI visibility
     if (hasRecommendation == false && hasUI == false && intersectsPointer.length == 0) {
       hasRecommendation = true;
       let recX = random(-100, 100);
       let recY = random(-100, 100);
       let recZ = random(-100, 100);
+      // Create recommendation node and point light
       addLightRec(recX, recY, recZ);
       const newRecommendation = new THREE.Mesh(recommendationGeometry, recommendationMaterial.clone());
       let color = new THREE.Color(0xffffff);
       newRecommendation.material.color = color.setHex(Math.random() * 0xffffff);
       newRecommendation.name = "recommendationNode";
+      // Get recomendation from list
       let randomRec = random(0, 2);
       if (randomRec == 0) {
         document.getElementById("nodeType").innerHTML = "person recommendation";
@@ -488,9 +503,11 @@ function addRandom() {
         document.getElementById("nodeDesc").innerHTML =
           "You might want to link to this content, that is already available in the Repository of Transformation.";
       }
+      // Add recommendation to scene
       newRecommendation.position.set(recX, recY, recZ);
       scene.add(newRecommendation);
       scene.getObjectByName("recommendationNode");
+      // Update local storages
       localStorage.setItem(
         scene.getObjectByName("recommendationNode").id + ".type",
         document.getElementById("nodeType").innerHTML
@@ -506,35 +523,40 @@ function addRandom() {
       document.getElementById("nodeType").innerHTML = "nodetype";
       document.getElementById("nodeName").innerHTML = "Node Name";
       document.getElementById("nodeDesc").innerHTML = "Type a description for this node here.";
+      // If not meeting the recommednation requirements
     } else {
+      // Remove recommendation nodess
       var removeObject = scene.getObjectByName("recommendationNode");
       var removeLight = scene.getObjectByName("recLight");
       scene.remove(removeObject);
       scene.remove(removeLight);
-      hasRecommendation = false;
+      hasRecommendation = false; // Update recommendation state
     }
   }
 }
 
+// Function to change the node shape
 function changeNodeShape() {
+  // If an active node is present
   if (scene.getObjectByName("activeNode")) {
+    // Check if shape counter needs resetting
     if (shapeCounter < geometryArray.length) {
-      scene.getObjectByName("activeNode").geometry = geometryArray[shapeCounter];
+      scene.getObjectByName("activeNode").geometry = geometryArray[shapeCounter]; // Update shape
       shapeCounter++;
     } else {
-      shapeCounter = 0;
-      scene.getObjectByName("activeNode").geometry = geometryArray[shapeCounter];
+      shapeCounter = 0; // Reset shape counter
+      scene.getObjectByName("activeNode").geometry = geometryArray[shapeCounter]; // Update shape
       shapeCounter++;
     }
   }
 }
 
-// Transform node
+// Function to tansform nodes
 function transformNode() {
+  // Check if a node is already transformed
   if (!scene.getObjectByName("transformControls")) {
-    // Disable camera rotation
-    autoRotate = false;
-
+    autoRotate = false; // Disable camera rotation
+    // Initate grid if not yet initiated
     if (hasGrid == false) {
       // Add gridhelpers
       const gridHelperXpos = new THREE.GridHelper(400, 10);
@@ -543,100 +565,93 @@ function transformNode() {
       const gridHelperYmin = new THREE.GridHelper(400, 10);
       const gridHelperZpos = new THREE.GridHelper(400, 10);
       const gridHelperZmin = new THREE.GridHelper(400, 10);
-
+      // Set parameters
       gridHelperXpos.name = "gridXpos";
       gridHelperXpos.position.x = 200;
       gridHelperXpos.rotation.x = Math.PI / 2;
       gridHelperXpos.rotation.z = Math.PI / 2;
       gridHelperXpos.visible = false;
-
       gridHelperXmin.name = "gridXmin";
       gridHelperXmin.position.x = -200;
       gridHelperXmin.rotation.x = Math.PI / 2;
       gridHelperXmin.rotation.z = Math.PI / 2;
       gridHelperXmin.visible = false;
-
       gridHelperYpos.name = "gridYpos";
       gridHelperYpos.position.y = 200;
       gridHelperYpos.visible = false;
-
       gridHelperYmin.name = "gridYmin";
       gridHelperYmin.position.y = -200;
       gridHelperYmin.visible = false;
-
       gridHelperZpos.name = "gridZpos";
       gridHelperZpos.position.z = 200;
       gridHelperZpos.rotation.x = Math.PI / 2;
       gridHelperZpos.rotation.y = Math.PI / 2;
       gridHelperZpos.visible = false;
-
       gridHelperZmin.name = "gridZmin";
       gridHelperZmin.position.z = -200;
       gridHelperZmin.rotation.x = Math.PI / 2;
       gridHelperZmin.rotation.y = Math.PI / 2;
       gridHelperZmin.visible = false;
-
+      // Add to scenes
       scene.add(gridHelperXpos);
       scene.add(gridHelperXmin);
       scene.add(gridHelperYpos);
       scene.add(gridHelperYmin);
       scene.add(gridHelperZpos);
       scene.add(gridHelperZmin);
-
-      // Stop grid init
+      // Update grid state
       hasGrid = true;
     }
-
-    // Attach controls
+    // Attach transform controls to active node
     if (scene.getObjectByName("activeNode")) {
       transformControls.attach(scene.getObjectByName("activeNode"));
       transformControls.name = "transformControls";
-      scene.add(transformControls);
-      showGrid();
+      scene.add(transformControls); // Add transform controls to scene
+      showGrid(); // Show the proper grids
     }
   } else {
-    backAll();
+    backAll(); // Back out and remove grids
   }
 }
 
-// Back
+// Escape from anys view to the default view
 function backAll() {
+  // Check if requirements are met
   if (!document.getElementById("uploadNotification").classList.contains("hidden")) {
     document.getElementById("uploadNotification").classList.add("hidden");
   } else {
-    transformControls.detach();
+    transformControls.detach(); // Detach transform controls
     transformControls.name = "";
-    autoRotate = true;
-    shapeCounter = 1;
+    autoRotate = true; // Enable camera auto rotate
+    shapeCounter = 1; // Reset shape counter
     if (scene.getObjectByName("activeNode")) {
-      saveLS();
-      clearLS();
+      saveLS(); // Save node info in node parameters
+      clearLS(); // Clear local storage
       scene.getObjectByName("activeNode").name = "";
     }
-    hideGrid();
-    collapseUI();
-
-    controls.dollyTo(DOLLY_DISTANCE_FAR, true);
-
-    // Enable controls
-    controls.enabled = true;
+    hideGrid(); // Hide grids
+    collapseUI(); // Hide UI
+    controls.dollyTo(DOLLY_DISTANCE_FAR, true); // sReset camera distance
+    controls.enabled = true; // Enable camera controls
   }
 }
 
-// Camera updates
+// Function to update transform grid furing camera changess
 function cameraUserChange() {
-  showGrid();
+  showGrid(); // Update grids
 }
 
-// Check which grids are visible
+// Function that checks which grids are needed and shows them
 function showGrid() {
+  // Check for transfrom controls
   if (scene.getObjectByName("transformControls")) {
+    // Get inverse camera vector
     var direction = new THREE.Vector3(
       controls.camera.position.x * -1,
       controls.camera.position.y * -1,
       controls.camera.position.z * -1
     );
-
+    // Set grids to visible or hidden based on the camera vector
     if (direction.x > 0) {
       scene.getObjectByName("gridXpos").visible = true;
       scene.getObjectByName("gridXmin").visible = false;
@@ -661,7 +676,7 @@ function showGrid() {
   }
 }
 
-// Hide grids
+// Function to hide grids
 function hideGrid() {
   if (scene.getObjectByName("gridXpos")) {
     scene.getObjectByName("gridXpos").visible = false;
@@ -683,186 +698,179 @@ function hideGrid() {
   }
 }
 
-// UI
+// Function to collapse the UI
 function collapseUI() {
-  hasUI = false;
+  hasUI = false; // Update UI state
+  // Collapse UI
   document.getElementById("whiteboardBox").style.right = "calc(-15vw - 2.5em)";
   document.getElementById("ui").style.left = "calc(-15vw - 2.5em)";
   if (document.getElementById("addButton").classList.contains("hidden")) {
-    document.getElementById("addButton").classList.remove("hidden");
+    document.getElementById("addButton").classList.remove("hidden"); // Update main buttons state
   }
   if (!document.getElementById("backButton").classList.contains("hidden")) {
-    document.getElementById("backButton").classList.add("hidden");
+    document.getElementById("backButton").classList.add("hidden"); // Update main buttons state
   }
 }
 
+// Function to open the UI
 function openUI() {
-  hasUI = true;
+  hasUI = true; // Update UI state
+  // Open UI
   document.getElementById("whiteboardBox").style.right = "0";
   document.getElementById("ui").style.left = "0";
   if (!document.getElementById("addButton").classList.contains("hidden")) {
-    document.getElementById("addButton").classList.add("hidden");
+    document.getElementById("addButton").classList.add("hidden"); // Update main buttons state
   }
   if (document.getElementById("backButton").classList.contains("hidden")) {
-    document.getElementById("backButton").classList.remove("hidden");
+    document.getElementById("backButton").classList.remove("hidden"); // Update main buttons state
   }
 }
 
-// Upload
+// Function to show the upload prompt
 function uploadPrompt() {
-  backAll();
-  controls.dollyTo(500, true);
-  rotationSpeed = 100;
-  document.getElementById("uploadNotification").classList.remove("hidden");
+  backAll(); // Go to inital view
+  controls.dollyTo(500, true); // Zoom camera out
+  rotationSpeed = 100; // Increase rotation speed
+  document.getElementById("uploadNotification").classList.remove("hidden"); // Show prompt
 }
 
+// Function to reset the page
 function deleteUpload() {
   document.getElementById("uploadNotification").classList.add("hidden");
-  document.location.reload();
+  document.location.reload(); // Reload window
 }
 
+// Function to restore the normal state oof the page
 function noDeleteUpload() {
-  rotationSpeed = 10;
-  controls.dollyTo(DOLLY_DISTANCE_FAR, true);
+  rotationSpeed = 10; // Set rotation speed to  normal
+  controls.dollyTo(DOLLY_DISTANCE_FAR, true); // Zoom to default distance
   document.getElementById("uploadNotification").classList.add("hidden");
 }
 
-// Local Storage
+// Function to save node info in local storage
 function saveLS() {
   if (scene.getObjectByName("activeNode")) {
     localStorage.setItem(
-      scene.getObjectByName("activeNode").id + ".type",
+      scene.getObjectByName("activeNode").id + ".type", // Save type
       document.getElementById("nodeType").innerHTML
     );
     localStorage.setItem(
-      scene.getObjectByName("activeNode").id + ".name",
+      scene.getObjectByName("activeNode").id + ".name", // Save names
       document.getElementById("nodeName").innerHTML
     );
     localStorage.setItem(
-      scene.getObjectByName("activeNode").id + ".desc",
+      scene.getObjectByName("activeNode").id + ".desc", // Save description
       document.getElementById("nodeDesc").innerHTML
     );
   }
 }
 
+// Function to load node info from the local storage
 function loadLS() {
   document.getElementById("nodeType").innerHTML = localStorage.getItem(
-    scene.getObjectByName("activeNode").id + ".type"
+    scene.getObjectByName("activeNode").id + ".type" // Load type
   );
   document.getElementById("nodeName").innerHTML = localStorage.getItem(
-    scene.getObjectByName("activeNode").id + ".name"
+    scene.getObjectByName("activeNode").id + ".name" // Load name
   );
   document.getElementById("nodeDesc").innerHTML = localStorage.getItem(
-    scene.getObjectByName("activeNode").id + ".desc"
+    scene.getObjectByName("activeNode").id + ".desc" // Load description
   );
 }
 
+// Function to clear the node info in thes UI
 function clearLS() {
   document.getElementById("nodeType").innerHTML = "nodetype";
   document.getElementById("nodeName").innerHTML = "Node Name";
   document.getElementById("nodeDesc").innerHTML = "Type a description for this node here.";
 }
 
-// Console logging
+// Function for console logging
 function log(string) {
   console.log(string);
 }
 
-// Random value
+// Function for generating random values
 function random(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-// Glitch
+// Function to enable the glitch effect
 function glitch() {
   glitchPass.enabled = true;
 }
 
+// Function to disable the glitch effect
 async function unGlitch() {
   setTimeout(function () {
     glitchPass.enabled = false;
   }, 100);
 }
 
-// Impact
-let sliderSize = 25;
-let loader3 = new THREE.TextureLoader();
-let cloudGeo = new THREE.PlaneBufferGeometry(sliderSize * 3, sliderSize * 3);
-let cloudMaterial2 = new THREE.MeshLambertMaterial();
-let cloudParticles = [];
-
-loader3.load("textures/smoke.jpg", function (texture) {
-  cloudMaterial2 = new THREE.MeshLambertMaterial({
-    alphaMap: texture,
-    transparent: true,
-    depthWrite: false,
-  });
-});
-
+// Function to create and remove impact clouds
 function setImpact() {
+  // If no impact cloud is yet present
   if (typeof scene.getObjectByName("activeNode").userData != "number") {
-    document.getElementById("impactSlider").disabled = false;
+    document.getElementById("impactSlider").disabled = false; // Enable slider
     let impactPos = scene.getObjectByName("activeNode").position;
-    let cloud = new THREE.Mesh(cloudGeo, cloudMaterial2);
+    // Create new cloud object
+    let cloud = new THREE.Mesh(impactGemetry, impactMaterial);
     cloud.position.set(impactPos.x, impactPos.y, impactPos.z);
     cloud.material.opacity = 0.35;
     cloud.name = "impactCloud";
-    cloudParticles.push(cloud);
-    scene.add(cloud);
+    impactCloud.push(cloud);
+    scene.add(cloud); // Add cloud to scene
     scene.getObjectByName("activeNode").userData = cloud.id;
     cloud.userData = scene.getObjectByName("activeNode").id;
   } else {
-    document.getElementById("impactSlider").disabled = true;
-    scene.remove(scene.getObjectById(scene.getObjectByName("activeNode").userData));
+    // If an impact cloud is already present
+    document.getElementById("impactSlider").disabled = true; // Disable slider
+    scene.remove(scene.getObjectById(scene.getObjectByName("activeNode").userData)); // Remove cloud from scene
     scene.getObjectByName("activeNode").userData = null;
   }
 }
 
+// Function to set the impact size
 function setSlider() {
-  sliderSize = this.value;
-  cloudGeo = new THREE.PlaneBufferGeometry(sliderSize * 3, sliderSize * 3);
-  scene.remove(scene.getObjectById(scene.getObjectByName("activeNode").userData));
+  sliderSize = this.value; // Get slider value from DOM elements
+  impactGemetry = new THREE.PlaneBufferGeometry(sliderSize * 3, sliderSize * 3);
+  scene.remove(scene.getObjectById(scene.getObjectByName("activeNode").userData)); // Select impact cloud coresponding to the selected impact node
   scene.getObjectByName("activeNode").userData = null;
-  setImpact();
+  setImpact(); // Set the node impact
 }
 
-// After effects
+/**
+ * After effects
+ */
+
+// Composer passes for visual effects
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(afterimagePass);
 composer.addPass(fxaaPass);
 composer.addPass(glitchPass);
-glitchPass.enabled = false;
+glitchPass.enabled = false; // Disable glitch pass after initialization
 
 /**
  * Tick
  */
 const clock = new THREE.Clock();
 
+// Runs for each tick
 const tick = () => {
-  // Get time passed
-  const delta = clock.getDelta();
-
-  // Begin stats
-  stats.begin();
-
-  // Update controls
-  controls.update(delta);
-
+  const delta = clock.getDelta(); // Get time passed
+  stats.begin(); // Begin stats
+  controls.update(delta); // Update camera controls
   // Rotate scene
   if (autoRotate) {
     controls.azimuthAngle += rotationSpeed * delta * THREE.MathUtils.DEG2RAD;
   }
-
-  // Turn recommendation
-  if (scene.getObjectByName("recommendationNode")) {
-    scene.getObjectByName("recommendationNode").rotation.y += 0.01;
-  }
-
-  // Turn impactClouds to camera and position
+  s;
+  // Turn impactClouds to camera and position them relative to their parent node
   for (let i = 0; i < scene.children.length; i++) {
     if (scene.children[i].name == "impactCloud") {
-      scene.children[i].lookAt(camera.position);
+      scene.children[i].lookAt(camera.position); // Turn impact clouds to camera
       if (scene.getObjectByName("transformControls")) {
+        //  Position impact clouds in the same position as their parent node (during transforming)
         scene.children[i].position.set(
           scene.getObjectById(scene.children[i].userData).position.x,
           scene.getObjectById(scene.children[i].userData).position.y,
@@ -871,8 +879,7 @@ const tick = () => {
       }
     }
   }
-
-  // Rotate shapes
+  // Spin nodes in space
   for (let i = 0; i < scene.children.length; i++) {
     if (scene.children[i].type == "Mesh") {
       if (scene.children[i].children.length != 0) {
@@ -904,21 +911,22 @@ const tick = () => {
       }
     }
   }
-
-  // Cloud generation
-  cloudParticles.forEach((p) => {
+  // Spin recommendation nodes in space
+  if (scene.getObjectByName("recommendationNode")) {
+    scene.getObjectByName("recommendationNode").rotation.y += 0.01;
+  }
+  // Spin impact clouds during generation
+  impactCloud.forEach((p) => {
     p.rotation.z -= 0.001;
   });
 
   // Render scene
-  composer.render(scene, camera);
-
-  // Call tick again on the next frame
-  requestAnimationFrame(tick);
+  composer.render(scene, camera); // Render scene
+  requestAnimationFrame(tick); // Call tick again on the next frame
 
   // End stats
   stats.end();
 };
 
-// Run tick
+// Run each tick
 tick();

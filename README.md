@@ -15,6 +15,6 @@ Folder | Content
 [exploration_of_scales](exploration_of_scales) | Exploration of the use of scales for giving structure to the content in the repository.
 [final_demonstrator](final_demonstrator) | A demonstrator to explore the case study documentation functionality, whilst providing a glimps of the future vision for the Repository of Transformation.
 
-## Requirements
+## Running the web prototypes
 To run the three explorative prototypes, you can clone this repository and open the coresponding index.html file in your browser.
 To use the final demonstrator, you can visit [this webpage](https://repo-duction.vercel.app).
