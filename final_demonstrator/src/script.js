@@ -266,8 +266,8 @@ document.getElementById("impactSlider").addEventListener("mouseup", setSlider);
 document.getElementById("impactSlider").addEventListener("touchend", setSlider);
 document.getElementById("deleteUploadNotification").addEventListener("click", deleteUpload);
 document.getElementById("noDeleteUploadNotification").addEventListener("click", noDeleteUpload);
-document.getElementById("agreeButton").addEventListener("click", hideConsent);
-document.getElementById("disagreeButton").addEventListener("click", hideConsent);
+// document.getElementById("agreeButton").addEventListener("click", hideConsent);
+// document.getElementById("disagreeButton").addEventListener("click", hideConsent);
 
 // Hide consent box
 function hideConsent() {
