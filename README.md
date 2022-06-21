@@ -11,7 +11,7 @@ Industrial Design at Eindhoven University of Technology. The project contributes
 Folder | Content
 --- | ---
 [exploration_of_lenses](exploration_of_lenses) | Exploration of the uses of lenses for navigating content in the repository.
-[exploration_of_reflection](exploration_of-reflection) | Exploration of facilitating reflection using a digital tool based on the Transforming Practices framework.
+[exploration_of_reflection](exploration_of_reflection) | Exploration of facilitating reflection using a digital tool based on the Transforming Practices framework.
 [exploration_of_scales](exploration_of_scales) | Exploration of the use of scales for giving structure to the content in the repository.
 [final_demonstrator](final_demonstrator) | A demonstrator to explore the case study documentation functionality, whilst providing a glimps of the future vision for the Repository of Transformation.
 
